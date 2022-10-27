@@ -1,0 +1,9 @@
+pull_request="https://github.com/paritytech/polkadot/pull/2013"
+commit_sha="6c7d5ffe7c9b88e1c8d3ffbea5f93f2387cca110"
+custom_binary="https://gitlab.example.com/mocks/mockproject/-/jobs/760569/artifacts/raw/artifacts/polkadot"
+requested_by = "mxinden"
+sync_from_scratch = false
+[nodes.kusama]
+  fullnode = 1
+  sentry = 0
+  validator = 1

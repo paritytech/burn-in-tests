@@ -1,0 +1,36 @@
+---
+image: docker.io/golang:1.16.0-buster
+
+stages:
+  - test
+  - build
+  - upload
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event"
+
+test:
+  stage: test
+  script:
+    - go test ./...
+
+build:
+  stage: build
+  script:
+    - mkdir -p dist
+    - go build -o dist gitlab.example.com/burn-in-tests/backend/cmd/run-job
+  artifacts:
+    paths:
+      - dist/
+
+upload:
+  stage: upload
+  needs: ["build"]
+  rules:
+    - if: $CI_COMMIT_BRANCH != 'master'
+      when: manual
+    - if: $CI_COMMIT_BRANCH == 'master'
+      when: on_success
+  script:
+    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file dist/run-job "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/backend/0.1.0/run-job"'

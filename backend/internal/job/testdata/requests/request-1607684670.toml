@@ -1,0 +1,9 @@
+pull_request = "https://github.com/paritytech/polkadot/pull/2013"
+custom_binary = "https://gitlab.example.com/mocks/mockproject/-/jobs/752482/artifacts/raw/artifacts/polkadot"
+custom_options = ["--wasm-execution Compiled", "--rpc-methods Unsafe"]
+requested_by = "mxinden"
+
+[nodes.kusama]
+fullnode = 1
+sentry = 0
+validator = 1

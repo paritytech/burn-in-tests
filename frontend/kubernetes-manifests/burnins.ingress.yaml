@@ -1,0 +1,24 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: traefik-internal
+    cert-manager.io/cluster-issuer: letsencrypt-dns01
+    external-dns.alpha.kubernetes.io/target: traefik-internal.example.com.
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+  name: burnins
+spec:
+  rules:
+  - host: burnins.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: burnins
+          servicePort: 80
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - burnins.example.com
+    secretName: burnins.example.com

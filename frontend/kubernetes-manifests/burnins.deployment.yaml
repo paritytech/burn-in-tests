@@ -1,0 +1,25 @@
+# Syntax reference https://kubernetes.io/docs/concepts/configuration/overview/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: burn-in-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: burn-in-frontend
+  template:
+    metadata:
+      labels:
+        app: burn-in-frontend
+    spec:
+      containers:
+        - name: nginx
+          image: $DOCKER_IMAGE_FULL_NAME
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 80
+          readinessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 5

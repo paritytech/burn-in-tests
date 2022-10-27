@@ -1,0 +1,82 @@
+---
+image: example.com/ansible:026390e0-20210603
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event"
+
+.download_backend:  &download_backend
+  before_script:
+    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" -o run-job "${CI_API_V4_URL}/projects/burn-in-tests%2Fbackend/packages/generic/backend/0.1.0/run-job"'
+    - "chmod u+x run-job"
+
+request:
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master' && $CI_PIPELINE_SOURCE != "schedule"
+      changes:
+        - requests/*.toml
+  <<: *download_backend
+  script:
+    - ./run-job request
+
+deploy-westend-validator:
+  tags:
+    - westend-validator
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master' && $CI_COMMIT_MESSAGE =~ /^\[deploy-westend-validator\].*/ && $CI_PIPELINE_SOURCE != "schedule"
+      changes:
+        - runs/*.toml
+  <<: *download_backend
+  script:
+    - ./run-job deploy
+
+deploy-kusama-fullnode:
+  tags:
+    - kusama-fullnode
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master' && $CI_COMMIT_MESSAGE =~ /^\[deploy-kusama-fullnode\].*/ && $CI_PIPELINE_SOURCE != "schedule"
+      changes:
+        - runs/*.toml
+  <<: *download_backend
+  script:
+    - ./run-job deploy
+
+deploy-polkadot-fullnode:
+  tags:
+    - polkadot-fullnode
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master' && $CI_COMMIT_MESSAGE =~ /^\[deploy-polkadot-fullnode\].*/ && $CI_PIPELINE_SOURCE != "schedule"
+      changes:
+        - runs/*.toml
+  <<: *download_backend
+  script:
+    - ./run-job deploy
+
+update-deployment:
+  tags:
+    - kubernetes-parity-build
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master' && $CI_COMMIT_MESSAGE =~ /^\[update-deployment\].*/ && $CI_PIPELINE_SOURCE != "schedule"
+      changes:
+        - runs/*.toml
+  <<: *download_backend
+  script:
+    - ./run-job update
+
+cleanup:
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master' && $CI_COMMIT_MESSAGE =~ /^\[cleanup\].*/ && $CI_PIPELINE_SOURCE != "schedule"
+      changes:
+        - runs/*.toml
+  <<: *download_backend
+  script:
+    - ./run-job cleanup
+
+refresh-idle-runners:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+  <<: *download_backend
+  script:
+    - ./run-job refresh
+

@@ -1,0 +1,11 @@
+pull_request="https://github.com/paritytech/polkadot/pull/2013"
+commit_sha="a7810560c0f62dd6d347e710a5e2a64da465c109"
+custom_binary="https://gitlab.example.com/mocks/mockproject/-/jobs/752482/artifacts/raw/artifacts/polkadot"
+requested_by="mxinden"
+deployed_at=2020-10-21T19:50:00Z
+deployed_on="kusama-fullnode-uw1-0"
+public_fqdn="kusama-fullnode-uw1-0.example.com"
+internal_fqdn="kusama-fullnode-uw1-0-int.example.com"
+sync_from_scratch=false
+node_type="fullnode"
+network = "kusama"

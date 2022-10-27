@@ -1,0 +1,4 @@
+.idea
+web/index.html
+utils/dist/*
+.maintain/ansible/collections

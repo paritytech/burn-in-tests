@@ -1,0 +1,8 @@
+pull_request = "https://github.com/paritytech/polkadot/pull/2013"
+commit_sha = "a7810560c0f62dd6d347e710a5e2a64da465c109"
+custom_binary = "https://gitlab.example.com/parity/polkadot/-/jobs/752482/artifacts/raw/artifacts/polkadot"
+custom_options = ["--wasm-execution Compiled", "--rpc-methods Unsafe"]
+requested_by = "mxinden"
+sync_from_scratch = true
+node_type = "fullnode"
+network = "kusama"

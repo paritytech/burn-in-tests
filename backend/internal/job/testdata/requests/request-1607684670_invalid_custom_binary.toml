@@ -1,0 +1,8 @@
+pull_request = "https://github.com/paritytech/polkadot/pull/2013"
+custom_binary = "not-a-url-at-all-not-even-a-little-bit-urly-around-the-edges"
+requested_by = "mxinden"
+
+[nodes.kusama]
+fullnode = 1
+sentry = 2
+validator = 0

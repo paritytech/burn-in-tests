@@ -1,0 +1,54 @@
+---
+stages:
+  - build
+  - dockerize
+  - deploy
+
+before_script:
+  - export DOCKER_IMAGE=$CI_REGISTRY/$CI_PROJECT_NAME
+  - export DOCKER_TAG=$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
+  - export DOCKER_IMAGE_FULL_NAME=$DOCKER_IMAGE:$DOCKER_TAG
+
+build:
+  stage: build
+  image: docker.io/node:15
+  script:
+    - yarn install
+    - yarn build
+  artifacts:
+    paths:
+      - build/
+
+dockerize:
+  stage: dockerize
+  image: quay.io/buildah/stable
+  needs: ["build"]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH != "master"'
+      when: manual
+  script:
+    - echo $DOCKER_IMAGE_FULL_NAME
+    - buildah bud
+      --squash
+      --format=docker
+      --tag "$DOCKER_IMAGE_FULL_NAME" .
+    - buildah push --format=v2s2 "$DOCKER_IMAGE_FULL_NAME"
+
+deploy:
+  stage: deploy
+  image: example.com/kubetools:latest
+  needs: ["dockerize"]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH != "master"'
+      when: manual
+  environment:
+    name: production
+  script:
+    - cat ./kubernetes-manifests/burnins.secrets.yaml | envsubst | kubectl apply -n $KUBE_NAMESPACE -f -
+    - cat ./kubernetes-manifests/burnins.service.yaml | envsubst | kubectl apply -n $KUBE_NAMESPACE -f -
+    - cat ./kubernetes-manifests/burnins.deployment.yaml | envsubst | kubectl apply -n $KUBE_NAMESPACE -f -
+    - cat ./kubernetes-manifests/burnins.ingress.yaml | envsubst | kubectl apply -n $KUBE_NAMESPACE -f -
